@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#2F4A9E">
+  <meta name="color-scheme" content="light dark">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-title" content="Tegaki">
+  <title>Tegaki 手書き</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon-192.png" type="image/png">
+  <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <div class="app">
+    <header class="top">
+      <h1 class="brand"><span class="brand-kanji" lang="ja">手書き</span><span class="brand-latin">Tegaki</span></h1>
+      <nav class="tabs" role="tablist" aria-label="Sections">
+        <button class="tab" role="tab" id="tab-draw" aria-controls="view-draw" aria-selected="true">Dessiner</button>
+        <button class="tab" role="tab" id="tab-search" aria-controls="view-search" aria-selected="false">Chercher</button>
+        <button class="tab" role="tab" id="tab-mine" aria-controls="view-mine" aria-selected="false">Mes kanjis</button>
+      </nav>
+      <button class="icon-btn" id="btn-settings" aria-label="Réglages" title="Réglages">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 8.5a3.5 3.5 0 1 0 0 7 3.5 3.5 0 0 0 0-7Zm8.1 4.1-.1-1.2 1.7-1.3-1.8-3.1-2 .8a7.6 7.6 0 0 0-1-.6l-.3-2.1h-3.6l-.3 2.1c-.4.2-.7.4-1 .6l-2-.8-1.8 3.1 1.7 1.3-.1 1.2.1 1.2-1.7 1.3 1.8 3.1 2-.8c.3.2.7.4 1 .6l.3 2.1h3.6l.3-2.1c.4-.2.7-.4 1-.6l2 .8 1.8-3.1-1.7-1.3.1-1.2Z" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/></svg>
+      </button>
+    </header>
+
+    <main class="main">
+      <section id="view-draw" class="view" role="tabpanel" aria-labelledby="tab-draw">
+        <div class="pad-card">
+          <div class="pad-frame">
+            <canvas id="pad" aria-label="Zone de dessin : trace un kanji, un trait après l'autre"></canvas>
+            <p class="pad-empty" id="pad-empty" aria-hidden="true">Trace un kanji ici</p>
+          </div>
+          <div class="pad-tools">
+            <button class="btn" id="btn-undo" disabled>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 7 4.5 11.5 9 16M5 11.5h8.5a5.5 5.5 0 0 1 0 11" transform="translate(0 -3)" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Annuler le trait
+            </button>
+            <button class="btn" id="btn-clear" disabled>
+              <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14M10 7V5h4v2m-7 0 .8 12h8.4L17 7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Effacer
+            </button>
+            <span class="pad-status" id="pad-status" role="status" aria-live="polite">Chargement des données…</span>
+          </div>
+        </div>
+        <div class="cands-wrap">
+          <h2 class="section-label" id="cands-label" hidden>Candidats</h2>
+          <ol class="cands" id="cands" aria-labelledby="cands-label"></ol>
+          <p class="tip" id="draw-tip">Respecte l'ordre et le sens des traits. S'il manque un trait ou si deux sont fusionnés, le bon kanji reste souvent dans la liste.</p>
+        </div>
+      </section>
+
+      <section id="view-search" class="view" role="tabpanel" aria-labelledby="tab-search" hidden>
+        <label class="field-label" for="q">Sens (français ou anglais), lecture en kana, ou kanji</label>
+        <input class="input" id="q" type="search" inputmode="search" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="ex. eau, みず, 水">
+        <p class="count" id="search-count" role="status" aria-live="polite"></p>
+        <ul class="rows" id="search-results"></ul>
+      </section>
+
+      <section id="view-mine" class="view" role="tabpanel" aria-labelledby="tab-mine" hidden>
+        <div class="mine-head">
+          <p class="count" id="mine-count"></p>
+          <div class="mine-actions">
+            <button class="btn" id="btn-anki">Export Anki (TSV)</button>
+            <button class="btn" id="btn-backup">Sauvegarde JSON</button>
+            <label class="btn" for="file-import">Importer</label>
+            <input type="file" id="file-import" accept="application/json,.json" hidden>
+          </div>
+        </div>
+        <ul class="rows" id="mine-results"></ul>
+        <p class="tip">Tes histoires et favoris sont gardés dans ce navigateur, sur cet appareil. Fais une sauvegarde JSON de temps en temps pour les transférer ou les protéger.</p>
+      </section>
+    </main>
+
+    <aside class="detail" id="detail" aria-label="Fiche du kanji" aria-hidden="true">
+      <div class="detail-inner" id="detail-inner"></div>
+    </aside>
+  </div>
+
+  <dialog class="dialog" id="dlg-settings" aria-labelledby="dlg-title">
+    <form method="dialog" id="form-settings">
+      <h2 id="dlg-title">Réglages</h2>
+      <p class="muted small">Les mnémoniques s'écrivent à la main, ou avec Claude si tu fournis une clé d'API. La clé reste dans ce navigateur et n'est envoyée qu'à api.anthropic.com. Pour un usage strictement personnel.</p>
+      <label class="field-label" for="set-key">Clé d'API Anthropic</label>
+      <input class="input" id="set-key" type="password" autocomplete="off" placeholder="sk-ant-…">
+      <label class="field-label" for="set-model">Modèle</label>
+      <input class="input" id="set-model" type="text" autocomplete="off" spellcheck="false" placeholder="claude-haiku-5-5">
+      <div class="dialog-actions">
+        <button class="btn" value="cancel" formnovalidate>Fermer</button>
+        <button class="btn btn-primary" id="btn-save-settings" value="ok">Enregistrer</button>
+      </div>
+    </form>
+  </dialog>
+
+  <script type="module" src="js/app.js"></script>
+</body>
+</html>

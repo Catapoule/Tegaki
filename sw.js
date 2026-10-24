@@ -1,6 +1,6 @@
 // Service worker : l'appli et ses données restent disponibles hors ligne.
 // Stratégie : réponse immédiate depuis le cache, mise à jour en arrière-plan (au prochain lancement).
-const CACHE = 'tegaki-v1';
+const CACHE = 'tegaki-v2';
 const SHELL = [
   './', 'index.html', 'css/style.css', 'js/app.js', 'js/recognizer.js', 'js/store.js', 'js/claude.js',
   'data/kanji.json', 'data/strokes.bin', 'manifest.webmanifest',

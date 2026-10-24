@@ -402,7 +402,8 @@ function playStrokes(i, animate) {
   const per = 520, t0 = performance.now();
   const tick = (now) => {
     if (token !== animToken) return;
-    const t = (now - t0) / per, s = Math.floor(t);
+    // le 1er horodatage de requestAnimationFrame peut précéder t0 : on borne à 0 pour ne jamais viser un trait inexistant
+    const t = Math.max(0, now - t0) / per, s = Math.floor(t);
     if (s >= strokes.length) { frame(strokes.length, null); numbers(); return; }
     frame(s, t - s); requestAnimationFrame(tick);
   };
